@@ -1,6 +1,4 @@
 # SQL-Projects_2 Sales and Profit Company
-![SalesProfit](https://github.com/Lunczer93/SQL-Project_2_Company_Sales_Profit/assets/65483365/657e5770-07b5-4c13-ab01-1ea6ee0e6212)
-
 # INTRODUCTION
 
 I was asked to analyze ***data that contains the information about the company’s products regarding Profit, Sales, Customers, Segment, Ship and Location in 2014-2017 years.*** 
@@ -25,7 +23,7 @@ Last but not least, the running difference of Sales Amount by months was calcula
 
 The analysis of Sales and Profit by month in 2014-2017 was also performed for selected categories
 
-The whole steps of my analysis were described in my project.
+The whole steps of my analysis were described in my project in T-SQL files [T-SQL files](https://github.com/Longwinter93/SQL_Projects/tree/main/SQL-Project_2_Company_Sales_Profit/T-SQL%20files)
 
 # MAIN CONCLUSIONS
 

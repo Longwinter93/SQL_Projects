@@ -1,6 +1,4 @@
 # SQL-Project_3_Productivity
-![productivity](https://github.com/Lunczer93/SQL-Project_3_Productivity/assets/65483365/8560c4bb-61ec-46ae-b391-8f7afabde060)
-
 # I INTRODUCTION
 
 I was asked to analyze ***the survey of the productivity of people in the range of Age (22-25, 30-33, 38-44, 55+) from selected countries.***
@@ -19,7 +17,7 @@ Next, an in-depth analysis was performed so as to show the percentage quantity o
 
 ***SQL Window Functions, Aggregate Functions, SQL Server Advanced Functions, String Functions and Variable were used to perform this analysis in Microsoft SQL Server.***
 
-The whole steps of my analysis were described in my project.
+The whole steps of my analysis were described in my project in T-SQL files [T-SQL files](https://github.com/Longwinter93/SQL_Projects/tree/main/SQL-Project_3_Productivity/T-SQL%20files)
 
 # III	MAIN CONCLUSIONS
 
