@@ -21,7 +21,7 @@ The analysis of the continents was also conducted.
 Last but not least, I would like to verify if the production and the consumption of coal and the emission of CO2 affect the life expectancy in these countries. 
 Then, I would like to analyze if there is any correlation between these ones.
 
-The whole steps of my analysis were described in my project in T-SQL files [T-SQL files](https://github.com/Longwinter93/Apache_Spark_Structured_Streaming_Data_Projects/blob/main/SparkStructuredStreaming_Project1/SparkStructuredStreaming_Project1.ipynb)
+The whole steps of my analysis were described in my project in T-SQL files [T-SQL files](https://github.com/Longwinter93/SQL_Projects/tree/main/SQL-Project_Coal_CO2_LifeExpectancy/T-SQL%20files)
 
 # THE MAIN CONCLUSIONS
 
