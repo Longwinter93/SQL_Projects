@@ -1,6 +1,4 @@
 # SQL-Project_4_SuperStore
-![superstore](https://github.com/Lunczer93/SQL-Project_4_SuperStore/assets/65483365/544b66b2-44e6-4e23-96ab-d7ade515fefd)
-
 # INTRODUCTION
 
 ***A detailed analysis was performed in all years (2011-2014) and their months regarding Ship Mode, Segment, City, Country, Market, Quantity of Orders, Region, Category, Sub-Category, Product Name and Order Priority.***

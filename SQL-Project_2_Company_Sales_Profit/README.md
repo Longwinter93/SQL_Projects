@@ -1,6 +1,4 @@
 # SQL-Projects_2 Sales and Profit Company
-![SalesProfit](https://github.com/Lunczer93/SQL-Project_2_Company_Sales_Profit/assets/65483365/657e5770-07b5-4c13-ab01-1ea6ee0e6212)
-
 # INTRODUCTION
 
 I was asked to analyze ***data that contains the information about the company’s products regarding Profit, Sales, Customers, Segment, Ship and Location in 2014-2017 years.*** 
