@@ -23,7 +23,7 @@ Last but not least, the running difference of Sales Amount by months was calcula
 
 The analysis of Sales and Profit by month in 2014-2017 was also performed for selected categories
 
-The whole steps of my analysis were described in my project in T-SQL files [T-SQL files](https://github.com/Longwinter93/SQL_Projects/tree/main/SQL-Project_2_Company_Sales_Profit/T-SQL%20files)
+The whole steps of my analysis were described in my project in [T-SQL files](https://github.com/Longwinter93/SQL_Projects/tree/main/SQL-Project_2_Company_Sales_Profit/T-SQL%20files)
 
 # MAIN CONCLUSIONS
 

@@ -6,7 +6,7 @@
 I am interested in details about the Sales, Profit and Shipping Cost in all available entities to make calculations and conclusions based on these.
 So, if I find anything interesting then I do not hesitate to bring that in also.
 
-The whole steps of my analysis were described in my project in T-SQL files [T-SQL files](https://github.com/Longwinter93/SQL_Projects/tree/main/SQL-Project_4_SuperStore/T-SQL%20files)
+The whole steps of my analysis were described in my project in [T-SQL files](https://github.com/Longwinter93/SQL_Projects/tree/main/SQL-Project_4_SuperStore/T-SQL%20files)
 
 # USAGE OF SQL
 ***View Tables, Temporary tables, Common Table Expressions and Table Variable*** were created to store data.
