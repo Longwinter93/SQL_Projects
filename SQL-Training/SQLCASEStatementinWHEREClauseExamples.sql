@@ -3,14 +3,24 @@
 
 
 USE AdventureWorks2019;
-
+--1. First Example
+SELECT BusinessEntityID,
+    LastName,
+    TerritoryName,
+    CountryRegionName
+FROM Sales.vSalesPerson
+WHERE TerritoryName IS NOT NULL
+ORDER BY CASE CountryRegionName 
+	WHEN 'United States' THEN TerritoryName  
+	ELSE CountryRegionName END DESC;
+--
 SELECT * 
 FROM [HumanResources].[Employee] 
 
 SELECT NationalIDNumber, MaritalStatus 
 FROM  [HumanResources].[Employee] 
 
---Showing all Single based on WHERE CASE:
+--2. Showing all Single based on WHERE CASE:
 SELECT NationalIDNumber, MaritalStatus 
 FROM  [HumanResources].[Employee] 
 WHERE CASE 
@@ -29,7 +39,7 @@ WHERE CASE
 			WHEN [BillToAddressID] = 947 THEN 1 
 			ELSE 0 
 			END = 1;
---If we want to exclude the records instead of including them,
+--3. If we want to exclude the records instead of including them,
 ---we can change the filter to return records with values set to 0 by the CASE statement.
 SELECT SalesOrderID,TerritoryID,ShipMethodID,BillToAddressID
 FROM [AdventureWorks2019].[Sales].[SalesOrderHeader]
@@ -38,7 +48,7 @@ WHERE CASE WHEN [TerritoryID] = 5 AND [ShipMethodID] = 5 THEN 1
 			ELSE 0 
 			END = 0;
 
---Similarly, you can combine multiple CASE statement conditions with OR and AND operators.
+--4. Similarly, you can combine multiple CASE statement conditions with OR and AND operators.
 --For example, the query below returns both Single and Married employees.
 SELECT NationalIDNumber,MaritalStatus 
 FROM [AdventureWorks2019].[HumanResources].[Employee]
@@ -52,20 +62,20 @@ WHERE (CASE
 	ELSE 0 
 	END = 1)
 
---Records with an average total due amount over 3000
+--5. Records with an average total due amount over 3000
 SELECT *
 FROM [AdventureWorks2019].[Sales].[SalesOrderHeader]
 WHERE CASE WHEN (SELECT AVG(TotalDue) FROM [Sales].[SalesOrderHeader]) > 3000 THEN 1 
 	ELSE 0 END = 1;
 
---where the CASE statement filters records when the OrderDate is between specified dates.
+--6. Where the CASE statement filters records when the OrderDate is between specified dates.
 SELECT * 
 FROM [AdventureWorks2019].[Sales].[SalesOrderHeader]
 WHERE CASE	
 		WHEN OrderDate BETWEEN '2023-01-01' AND '2023-01-31' THEN 1 ELSE 0 
 		END = 1;
 
---All of these queries could be written without the CASE, but sometimes using CASE makes it easier to read the code. 
+--7. All of these queries could be written without the CASE, but sometimes using CASE makes it easier to read the code. 
 --Here is an example of using CASE versus using OR for the query.
 --These both return the same results and also have the same execution plan.
 SELECT SalesOrderID,TerritoryID,ShipMethodID,BillToAddressID
@@ -80,7 +90,7 @@ SELECT SalesOrderID, TerritoryID, ShipMethodID, BillToAddressID
 FROM [AdventureWorks2019].[Sales].[SalesOrderHeader]
 WHERE ([TerritoryID] = 5 AND [ShipMethodID] = 5) OR BillToAddressID = 947;
 
---Another case using WHEN:
+--8. Another case using WHEN:
 SELECT
    bom.BillOfMaterialsID,
    bom.ProductAssemblyID,
@@ -106,7 +116,7 @@ WHERE -- filter these data based on conditions:
                        ELSE 0
                    END;
 
---Showing records from the [SalesOrderHeader] table where the orderdate is between specified dates.
+--9. Showing records from the [SalesOrderHeader] table where the orderdate is between specified dates.
 --If this condition is satisfied, check for orders with a value 1 for column [OnlineOrderFlag]
 SELECT *
 FROM [AdventureWorks2019].[Sales].[SalesOrderHeader]
@@ -119,7 +129,7 @@ WHERE CASE
 		ELSE 0 
 		END = 1
 
---CASE Statement in WHERE Clause as SubQuery
+--10. CASE Statement in WHERE Clause as SubQuery
 SELECT SalesOrderID,SalesOrderNumber,TotalDue,AccountNumber
 FROM [AdventureWorks2019].[Sales].[SalesOrderHeader] 
 WHERE SalesOrderID IN (

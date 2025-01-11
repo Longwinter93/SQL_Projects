@@ -9,5 +9,7 @@
 - ### [SQL-Project_2_Company_Sales_Profit](https://github.com/Longwinter93/SQL_Projects/tree/main/SQL-Project_2_Company_Sales_Profit)
 - ### [SQL-Project_3_Productivity](https://github.com/Longwinter93/SQL_Projects/tree/main/SQL-Project_3_Productivity)
 - ### [SQL-Project_4_SuperStore](https://github.com/Longwinter93/SQL_Projects/tree/main/SQL-Project_4_SuperStore)
+- ### [SQL-Training](https://github.com/Longwinter93/SQL_Projects/tree/main/SQL-Training)
+
 
 ###### To create README, this site [T-SQL](https://learn.microsoft.com/en-gb/training/modules/get-started-transact-sql-programming/) was used.
