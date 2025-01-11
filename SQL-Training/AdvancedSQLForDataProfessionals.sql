@@ -29,7 +29,7 @@ INSERT INTO Employees VALUES (10, 'Oliver', 'Beckett', 6);
 
 SELECT * FROM Employees
 
---RECURSIVE 
+--1. RECURSIVE 
 --A recursive CTE can reference itself, a preceding CTE, or a subsequent CTE. 
 --A non-recursive CTE can reference only preceding CTEs and can't reference itself. 
 --Recursive CTEs run continuously until no new results are found, while non-recursive CTEs run once.
@@ -53,7 +53,7 @@ SELECT
 FROM cteReports
 ORDER BY EmpLevel, MgrID 
 
---Date Dimension Table 
+-- Date Dimension Table 
 
 WITH dates (Date, year, month) as (
 	SELECT
@@ -71,7 +71,7 @@ SELECT *
 FROM dates
 option (maxrecursion 0); 
 
---Duplicate rows
+--2. Duplicate rows
 with dane (id, name, age, date) as
 (
 select 1, 'John Smit', 19, '2020-01-01' 
@@ -113,7 +113,7 @@ from dane as a
 INNER JOIN (SELECT name, max(date) as date FROM dane GROUP BY name) as dane2
 ON dane2.name = a.name AND dane2.date = a.date
  
--- Finding New Records or Records that Don’t Exist
+--3. Finding New Records or Records that Don’t Exist
 DROP TABLE IF EXISTS TargetEmployees;
 GO
 CREATE TABLE TargetEmployees
@@ -161,7 +161,7 @@ INSERT INTO Sourceraw_Employees VALUES (12, 'Oliver', 'Beckett', 6);
 
 SELECT * FROM Sourceraw_Employees
 
---Verifying if there are new records in on the source table:
+--4. Verifying if there are new records in on the source table:
 
 SELECT *
 FROM Sourceraw_Employees as a
@@ -170,13 +170,13 @@ SELECT 1
 FROM TargetEmployees as b
 WHERE a.EmployeeID = B.EmployeeID)
 
---2.
+--
 SELECT *
 FROM Sourceraw_Employees  as a
 LEFT JOIN TargetEmployees as b ON a.EmployeeID = B.EmployeeID 
 WHERE B.EmployeeID IS NULL 
 
---Checking for Existing Values in Other Tables (Active Clients)
+--5. Checking for Existing Values in Other Tables (Active Clients)
 --You might be asked to create a report that shows only active clients. 
 --To identify these clients, you can check if a specific CustomerID exists in another table.
 DROP TABLE IF EXISTS  Customers
@@ -241,7 +241,7 @@ SELECT 1
 FROM orders as o 
 WHERE c.CustomerID = o.CustomerID )
 
---Filling Gaps in Data Using SQL
+--6. Filling Gaps in Data Using SQL
 --https://www.mssqltips.com/sqlservertip/7379/last-non-null-value-set-of-sql-server-records/
 -- IGNORE NULLs option in window functions could be used. for example:
 --first_value(price)  ignore nulls  over(order by cal.date) price
@@ -335,7 +335,7 @@ SELECT Date,
 first_value(price) OVER (PARTITION BY _grp order by Date) as price2,
 first_value(currency) OVER (PARTITION BY _grp order by Date) as currency2
 FROM groupingNull 
---2
+--
 DROP TABLE IF EXISTS #SampleData;
  
 WITH CTE_SampleData AS
@@ -372,7 +372,7 @@ ORDER BY EmployeeCode, DateKey
 
 
 
---Finding Employees with the Highest Salary
+--7. Finding Employees with the Highest Salary
 
 with Employees  (EmployeeID, Name, Salary) as (
 select 1, 'John', 5000 
@@ -399,7 +399,7 @@ SELECT *
 FROM Employees as e 
 INNER JOIN (SELECT DISTINCT TOP(4) Salary, EmployeeID FROM Employees ORDER BY Salary DESC) as S 
 ON E.EmployeeID =  S.EmployeeID
---2
+--
 with Employees (EmployeeID, Name, Salary)  as (
 select 1, 'John', 5000 
 UNION ALL 
@@ -428,7 +428,8 @@ FROM Employees)
 SELECT *
 FROM CTERa
 WHERE RankSalary <= 3
---Using the MAX Function with a Subquery
+
+--8. Using the MAX Function with a Subquery
 with Employees  (EmployeeID, Name, Salary) as (
 select 1, 'John', 5000 
 UNION ALL 
@@ -481,7 +482,7 @@ SELECT *
 FROM Employees 
 WHERE Salary = (SELECT MAX(Salary) as Salary FROM Employees)
 
---UNPIVOT  it will be useful for data modeling purposes to move values from columns to rows.
+--9. UNPIVOT  it will be useful for data modeling purposes to move values from columns to rows.
 with data (productID, I2024, II2024, III2024, IV2024) 
 AS 
 (
@@ -593,7 +594,7 @@ PIVOT (
 	SUM(Value) FOR Quarter IN ([1],[2],[3],[4])
 ) AS PivotTable
 
---Compare Row-to-Row: LAG Function
+--10. Compare Row-to-Row: LAG Function
 
 with currency (date, price, currency) as (
 select cast('2006-01-02' as date) ,3.2582, 'USD'
@@ -615,7 +616,7 @@ SELECT
 	(price - LAG(price) OVER (order by date)) / LAG(price) OVER (order by date) change
 FROM currency; 
 
--- The LEAD Function
+--11. The LEAD Function
 with currency (date, price, currency) as (
 select cast('2006-01-02' as date) ,3.2582, 'USD'
 UNION select cast('2006-01-03' as date) ,3.2488  , 'USD'
@@ -635,7 +636,7 @@ SELECT
 	LEAD(price) OVER (ORDER BY date) as NextPrice 
 FROM currency 
 
---NTILE
+--12. NTILE
 with Employees  (EmployeeID, Name, Salary) as (
 select 1, 'John', 5000 
 UNION ALL select  2, 'Jane', 7000
@@ -655,7 +656,7 @@ SELECT
 	NTILE(10) OVER (ORDER BY Salary) as SalaryQuartile
 FROM Employees 
 
---MERGE INTO
+--13. MERGE INTO
 DROP TABLE IF EXISTS EmployeesMerge
 CREATE TABLE EmployeesMerge
 (
@@ -730,7 +731,7 @@ WHERE ManagerID = 7
 --Using Merge to update tables
 
 
---Checking if Tables are The Same
+--14. Checking if Tables are The Same
 DROP TABLE IF EXISTS EmployeesExcept
 CREATE TABLE EmployeesExcept
 (
@@ -775,7 +776,7 @@ SELECT * FROM EmployeesExcept
 EXCEPT
 SELECT * FROM raw_EmployeesExcept
 
---Avoid ambiguity when naming calculated fields
+--15. Avoid ambiguity when naming calculated fields
 DROP TABLE IF EXISTS products
 CREATE TABLE products (
     product VARCHAR(50) NOT NULL,
@@ -803,8 +804,9 @@ SELECT
 	RANK() OVER (ORDER BY CASE WHEN product ='Robot' THEN 0 ELSE revenue END DESC) AS revenue
 FROM products
 
+--16. NOT IN; EXISTS; LEFT JOIN
 --https://lasha-dolenjashvili.medium.com/sqls-exists-and-not-exists-a-comprehensive-guide-41e45902a79d
---NOT IN; EXISTS; LEFT JOIN
+
 USE WideWorldImportersDW;
 
 SELECT * 
@@ -868,16 +870,5 @@ FROM ProductTables as P
 LEFT JOIN OrderTables as O ON p.ProductID = O.ProductID 
 WHERE o.ProductID IS NULL; 
 
---
-USE AdventureWorks2019;
 
-SELECT BusinessEntityID,
-    LastName,
-    TerritoryName,
-    CountryRegionName
-FROM Sales.vSalesPerson
-WHERE TerritoryName IS NOT NULL
-ORDER BY CASE CountryRegionName 
-	WHEN 'United States' THEN TerritoryName  
-	ELSE CountryRegionName END DESC;
 
