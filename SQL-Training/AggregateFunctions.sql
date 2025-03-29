@@ -1,0 +1,2 @@
+--https://learnsql.com/blog/aggregate-functions-in-sql/
+--https://learnsql.com/blog/window-functions-vs-aggregate-functions/
