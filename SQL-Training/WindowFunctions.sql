@@ -1,0 +1,8 @@
+--https://learn.microsoft.com/en-us/sql/t-sql/queries/select-window-transact-sql?view=sql-server-ver16
+--https://www.geeksforgeeks.org/window-functions-in-sql/
+--https://www.sqlshack.com/use-window-functions-sql-server/
+--https://www.mssqltips.com/sqlservertip/6738/sql-window-functions-in-sql-server/
+--https://www.red-gate.com/simple-talk/databases/sql-server/t-sql-programming-sql-server/introduction-to-t-sql-window-functions/
+--https://learnsql.com/blog/sql-window-functions-examples/
+--https://learnsql.com/blog/sql-window-functions-cheat-sheet/
+--https://learnsql.com/blog/best-window-functions-articles/
