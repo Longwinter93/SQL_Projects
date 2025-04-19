@@ -341,3 +341,127 @@ RANK() OVER(PARTITION BY PlaceOfExamCity, StudentName ORDER BY ExamDate ASC) as 
 FROM ExamResult;
 GO
 
+--Working with NULL VALUES
+--https://stackoverflow.com/questions/39984393/exclude-null-values-using-dense-rank
+--https://stackoverflow.com/questions/39756847/how-to-not-count-null-values-in-dense-rank
+--https://stackoverflow.com/questions/3676875/setting-rank-to-null-using-rank-over-in-sql
+--We need to put NULL values at the end of the order to ignore null values in Ranking!
+--To completely ignore null values, we need to use PARTITION BY and in this PARTITION BY we need to put NULL values at the end of the order
+--In particular in ASCENDING order! Paying attention to it !
+DROP TABLE  IF EXISTS ExamResultWithNull;
+GO
+
+--
+SELECT *
+INTO ExamResultWithNull
+FROM ExamResult;
+GO
+--
+INSERT INTO ExamResultWithNull
+VALUES
+('Lily','History','Warsaw', NULL,'2018-11-05'),
+('Isabella', 'History','Paris', NULL,'2020-08-05'),
+('Isabella', 'Music', 'Luxemburg',NULL,'2020-02-04'),
+('Olivia', 'History','Oslo',NULL,'2022-10-05'),
+('Olivia', 'Geography','Lisbon',  NULL,'2023-08-05'),
+('Olivia', 'Literature','Berlin', NULL,'2023-07-12');
+GO
+--Include NULL VALUES:
+SELECT
+	*,
+	DENSE_RANK() OVER(ORDER BY Marks) as DENSERANKFUNC,
+	RANK() OVER(ORDER BY Marks) as RANKFUNC,
+	ROW_NUMBER() OVER(ORDER BY Marks) AS ROWNUMBERFUNC
+FROM ExamResultWithNull
+ORDER BY Marks ASC;
+GO
+--
+--Putting NULL values to the bottom:
+SELECT *,
+	ROW_NUMBER() OVER (
+	ORDER BY 
+		CASE WHEN Marks IS NULL THEN 1 ELSE 0 END, -- NULLs get ranked last, pushing null values to the end
+		Marks DESC) as RANK
+FROM ExamResultWithNull;
+GO
+
+-- Ignore null values in Ranking:
+--DENSE_RANK
+SELECT
+	*,
+	CASE WHEN Marks IS NOT NULL 
+		THEN DENSE_RANK() OVER(PARTITION BY (CASE WHEN Marks IS NOT NULL THEN 1 ELSE 0 END) ORDER BY Marks ASC) END AS DENSERANKIGNORENULL,
+	CASE 
+		WHEN Marks IS NOT NULL THEN 
+			DENSE_RANK() OVER (ORDER BY Marks ASC) END AS DENSERANKIGNORENULL2,
+	DENSE_RANK() OVER(ORDER BY Marks ASC) as DENKSERANKTOLERATENULL
+FROM ExamResultWithNull;
+GO
+--
+SELECT
+	*,
+	CASE WHEN Marks IS NOT NULL 
+		THEN DENSE_RANK() OVER(PARTITION BY (CASE WHEN Marks IS NOT NULL THEN 1 ELSE 0 END) ORDER BY Marks DESC) END AS DENSERANKIGNORENULL,
+	CASE 
+		WHEN Marks IS NOT NULL THEN 
+			DENSE_RANK() OVER (ORDER BY Marks DESC) END AS DENSERANKIGNORENULL2,
+	DENSE_RANK() OVER(ORDER BY Marks DESC) as DENKSERANKTOLERATENULL
+FROM ExamResultWithNull;
+GO
+
+--RANK()
+SELECT *,
+	CASE WHEN Marks IS NOT NULL 
+		THEN RANK() OVER(PARTITION BY (CASE WHEN Marks IS NOT NULL THEN 1 ELSE 0 END) ORDER BY Marks ASC) END AS RankFuncIgnoreNull1,
+	CASE WHEN Marks IS NOT NULL 
+		THEN RANK() OVER(ORDER BY Marks ASC) END AS RankFuncIgnoreNull2,
+	RANK() OVER(ORDER BY Marks ASC) AS RankFuncTolerateNull
+FROM ExamResultWithNull
+GO;
+--
+SELECT *,
+	CASE WHEN Marks IS NOT NULL 
+		THEN RANK() OVER(PARTITION BY (CASE WHEN Marks IS NOT NULL THEN 1 ELSE 0 END) ORDER BY Marks DESC) END AS RankFuncIgnoreNull1,
+	CASE WHEN Marks IS NOT NULL 
+		THEN RANK() OVER(ORDER BY Marks DESC) END AS RankFuncIgnoreNull2,
+	RANK() OVER(ORDER BY Marks DESC) AS RankFuncTolerateNull
+FROM ExamResultWithNull
+GO;
+
+
+--ROW_NUMBER()
+SELECT *,
+	ROW_NUMBER() OVER(ORDER BY Marks ASC) AS RowNumFuncToleNull,
+	CASE WHEN Marks IS NOT NULL 
+		THEN ROW_NUMBER() OVER(ORDER BY Marks ASC) END AS RowNumFuncIgnoreNull1,
+	CASE WHEN Marks IS NOT NULL 
+		THEN ROW_NUMBER() OVER (PARTITION BY (CASE WHEN Marks IS NOT NULL THEN 1 ELSE 0 END) ORDER BY Marks ASC) END AS RowNumFuncIgnoreNull2
+FROM ExamResultWithNull;
+GO
+--
+SELECT *,
+	ROW_NUMBER() OVER(ORDER BY Marks DESC) AS RowNumFuncToleNull,
+	CASE WHEN Marks IS NOT NULL 
+		THEN ROW_NUMBER() OVER(ORDER BY Marks DESC) END AS RowNumFuncIgnoreNull1,
+	CASE WHEN Marks IS NOT NULL 
+		THEN ROW_NUMBER() OVER (PARTITION BY (CASE WHEN Marks IS NOT NULL THEN 1 ELSE 0 END) ORDER BY Marks DESC) END AS RowNumFuncIgnoreNull2
+FROM ExamResultWithNull;
+GO
+-- ROW_NUMBER WITH PARTITION BY IGNORING NULL VALUES
+SELECT *,
+	ROW_NUMBER() OVER(PARTITION BY StudentName ORDER BY Marks DESC) AS RankingPerStudentNameTolerateNull,
+	CASE WHEN Marks IS NOT NULL 
+		THEN ROW_NUMBER() OVER(PARTITION BY StudentName ORDER BY Marks DESC) END AS RankingPerStudentNameIgnoreNull
+FROM ExamResultWithNull;
+GO
+--
+SELECT *,
+	ROW_NUMBER() OVER(PARTITION BY StudentName ORDER BY Marks ASC) AS RankingPerStudentNameTolerateNull,
+	CASE WHEN Marks IS NOT NULL 
+		THEN ROW_NUMBER() OVER(PARTITION BY StudentName ORDER BY Marks ASC) END AS RankingPerStudentNameIgnoreNull1,
+	CASE WHEN Marks IS NOT NULL 
+		THEN ROW_NUMBER() OVER(PARTITION BY StudentName ORDER BY CASE WHEN Marks IS NULL THEN 1 ELSE 0 END, Marks ASC) END AS RankingPerStudentNameIgnoreNull2
+FROM ExamResultWithNull;
+GO
+--To ensure that the nulls do not get counted in the rank, 
+--you can force them to the bottom by adding an initial sort criteria on whether the value IS NULL or not, like so
