@@ -134,3 +134,9 @@ SELECT A.*,B.*
 FROM [testing].[TableB] as B 
 CROSS JOIN [testing].[TableA] AS A
 --Results are the same
+
+--DIFFERENCE BETWEEN CONDITION IN A WHERE CLAUSE AND IN A JOIN
+--https://learnsql.com/blog/introduction-using-aggregate-functions-joins/
+--https://stackoverflow.com/questions/2559194/difference-between-and-and-where-in-joins
+--https://learnsql.com/blog/introduction-using-aggregate-functions-joins/
+--https://dev.to/dmodena/difference-between-join-and-where-clauses-in-sql-41pi
