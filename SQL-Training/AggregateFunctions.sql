@@ -150,7 +150,7 @@ SUM(Sales) OVER (ORDER BY CompanyName DESC) as CumulativeTotalForAllCompanyName
 FROM Aggregated.Sales
 --ORDER BY ID ASC;
 GO
-
+--
 --CumulativeTotal for Year
 USE AdventureWorks2019;
 GO
@@ -164,6 +164,26 @@ FROM Sales.SalesPerson
 WHERE TerritoryID IS NULL OR TerritoryID < 5
 ORDER BY SalesYear;
 GO
+
+--Including NULL values - if we want to include null values in calculations, we can use COALESCE()
+USE AggregateFunctionsTraining;
+GO
+--
+WITH SumOfSalesDiffrenceIncludingNullValues AS ( 
+	SELECT 
+		Department, 
+		Sales,
+		COALESCE(Sales,0) as Sales0IsNull
+	FROM Aggregated.Sales
+)
+SELECT 
+	Department,
+	SUM(Sales) as Sales,
+	SUM(Sales0IsNull) AS SalesNull
+FROM SumOfSalesDiffrenceIncludingNullValues
+GROUP BY Department;
+GO
+-- it does not make any differences in SUM, but IN AVG() it affects
 
 --AVG
 --https://learn.microsoft.com/pl-pl/sql/t-sql/functions/avg-transact-sql?view=sql-server-ver16
@@ -270,6 +290,27 @@ GO
 
 SELECT *, AVG(Sales) OVER (ORDER BY CompanyName ASC) AS AvgMoving
 FROM Aggregated.Sales 
+--
+--Including NULL values - if we want to include null values in calculations, we can use COALESCE()
+USE AggregateFunctionsTraining;
+GO
+--
+WITH AVGOfSalesDiffrenceIncludingNullValues AS ( 
+	SELECT 
+		Department, 
+		Sales,
+		COALESCE(Sales,0) as Sales0IsNull
+	FROM Aggregated.Sales
+)
+SELECT 
+	Department,
+	AVG(Sales) as Sales,
+	AVG(Sales0IsNull) AS SalesNull
+FROM AVGOfSalesDiffrenceIncludingNullValues
+GROUP BY Department;
+GO
+--As we can see it affects the final result, taking look at Marketing and R&D 
+
 
 --MAX for date and characters
 --Returns the maximum value in the expression.
@@ -349,6 +390,17 @@ SELECT DISTINCT
 	MAX(DateOfBusiness) OVER(PARTITION BY CompanyName) AS MaxOfDateOfBusiness 
 FROM Aggregated.Sales;
 GO
+
+--Latest Sale of Month per Department. Most recent Date Of Business for Department
+SELECT Department,
+	MAX(MONTH(DateOfBusiness)) as RecentDateOfBusinessMonth
+FROM Aggregated.Sales
+GROUP BY Department;
+GO
+-- 
+SELECT *
+FROM Aggregated.Sales
+
 
 --MIN for date and characters
 USE AdventureWorks2019;
@@ -526,11 +578,23 @@ SELECT
 	--COUNT(DISTINCT Department) OVER (PARTITION BY CompanyName) AS DepartmentPerCompanyNameWithoutNullValuesAndDuplicate,
 FROM Aggregated.Sales;
 GO
+--Calculating NULL Values in a column
+SELECT 
+	SUM(CASE WHEN CompanyName IS NULL THEN 1 ELSE 0 END) as [Quantity of Null Values],
+	COUNT(CompanyName) AS [Quantity of nonNull Values]
+FROM Aggregated.Sales;
+GO
+--
+
+
+
 --count distinct with partition by sql
 --https://stackoverflow.com/questions/11202878/partition-function-count-over-possible-using-distinct
 --https://dba.stackexchange.com/questions/239788/sql-counting-distinct-over-partition
 --https://stackoverflow.com/questions/11202878/partition-function-count-over-possible-using-distinct
 --https://stackoverflow.com/questions/57625457/count-over-partition-by-with-one-condition-dont-count-the-null-values
+USE AggregateFunctionsTraining;
+GO
 
 SELECT 
 	CompanyName, 
@@ -613,6 +677,127 @@ GROUP BY CompanyName
 HAVING SUM(Sales)> 50000;
 GO
 --
---https://learnsql.com/blog/window-functions-vs-aggregate-functions/
+
 --https://www.sqlshack.com/sql-partition-by-clause-overview/
---https://learnsql.com/blog/aggregate-functions/
+--GROUP BY VS PARTITION BY 
+USE AggregateFunctionsTraining;
+GO
+
+SELECT CompanyName,
+	AVG(Sales) AvgSales,
+	SUM(Sales) SumSales,
+	MIN(Sales) MinSales,
+	MAX(Sales) MaxSales
+FROM Aggregated.Sales
+GROUP BY CompanyName;
+GO
+--
+SELECT CompanyName,
+	AVG(Sales) OVER(PARTITION BY CompanyName) AvgSales,
+	SUM(Sales) OVER(PARTITION BY CompanyName) SumSales,
+	MIN(Sales) OVER(PARTITION BY CompanyName) MinSales,
+	MAX(Sales) OVER(PARTITION BY CompanyName) MaxSales
+FROM Aggregated.Sales;
+GO
+--It perfoms aggregation, and we can see non-aggregated columns as well in the output
+SELECT 
+	*,
+	AVG(Sales) OVER(PARTITION BY CompanyName) AvgSales,
+	SUM(Sales) OVER(PARTITION BY CompanyName) SumSales,
+	MIN(Sales) OVER(PARTITION BY CompanyName) MinSales,
+	MAX(Sales) OVER(PARTITION BY CompanyName) MaxSales,
+	COUNT(ID) OVER(PARTITION BY CompanyName) AS CountOfDepartments
+FROM Aggregated.Sales;
+GO
+--
+SELECT *,
+	ROW_NUMBER() OVER (PARTITION BY CompanyName ORDER BY Sales DESC) AS RowNumber,
+	SUM(Sales) OVER(PARTITION BY CompanyName ORDER BY Sales DESC ROWS BETWEEN CURRENT ROW AND 1 FOLLOWING) AS CumulativeTotal 
+	--Rank 1+2, Rank 2 + 3, Rank 3+ 4
+FROM Aggregated.Sales;
+GO
+--
+SELECT *,
+	ROW_NUMBER() OVER (PARTITION BY CompanyName ORDER BY Sales DESC) AS RowNumber,
+	AVG(Sales) OVER(PARTITION BY CompanyName ORDER BY Sales DESC ROWS BETWEEN CURRENT ROW AND 1 FOLLOWING) AS CumulativeTotal 
+	--Rank 1+2, Rank 2 + 3, Rank 3+ 4
+FROM Aggregated.Sales;
+--
+SELECT *,
+	ROW_NUMBER() OVER (PARTITION BY CompanyName ORDER BY Sales DESC) AS RowNumber,
+	AVG(Sales) OVER(PARTITION BY CompanyName ORDER BY Sales DESC ROWS UNBOUNDED PRECEDING) AS CumulatvieAvg,
+	SUM(Sales) OVER(PARTITION BY CompanyName ORDER BY Sales DESC ROWS UNBOUNDED PRECEDING) AS CumulatvieSum,
+	--Rank 1+2, Rank 1+2 + 3, Rank 1+2+3+ 4
+	AVG(Sales) OVER(PARTITION BY CompanyName ORDER BY Sales DESC RANGE UNBOUNDED PRECEDING) AS CumulatvieAVGWithRangeDuplicate1,
+	SUM(Sales) OVER(PARTITION BY CompanyName ORDER BY Sales DESC RANGE UNBOUNDED PRECEDING) AS CumulatvieSUMWithRangeDuplicate2
+FROM Aggregated.Sales;
+
+----https://learnsql.com/blog/window-functions-vs-aggregate-functions/
+USE AggregateFunctionsTraining;
+GO
+
+
+DROP TABLE IF EXISTS TransactionCities;
+GO
+
+CREATE TABLE TransactionCities (
+	id int,
+	date datetime,
+	city nvarchar(255),
+	amount decimal(8,2)
+)
+
+INSERT INTO TransactionCities
+SELECT 1, '2020-11-01',	'San Francisco',	420.65
+UNION ALL 
+SELECT 2,	'2020-11-01',	'New York',	1129.85
+UNION ALL 
+SELECT 3,	'2020-11-02',	'San Francisco',	2213.25
+UNION ALL 
+SELECT 4,	'2020-11-02',	'New York',	499.00
+UNION ALL 
+SELECT 5,	'2020-11-02',	'New York',	980.30
+UNION ALL 
+SELECT 6,	'2020-11-03',	'San Francisco',	872.60
+UNION ALL 
+SELECT 7,	'2020-11-03',	'San Francisco',	3452.25
+UNION ALL 
+SELECT 8,	'2020-11-03',	'New York',	563.35
+UNION ALL 
+SELECT 9,	'2020-11-04',	'New York',	1843.10
+UNION ALL 
+SELECT 10,	'2020-11-04',	'San Francisco',	1705.00;
+GO
+
+SELECT * 
+FROM TransactionCities;
+GO
+--the average daily transaction amount for each city
+SELECT 
+	date, city, AVG(amount) as avg_transaction_amount_for_city
+FROM TransactionCities
+GROUP BY date, city;
+GO
+--rows are not collapsed, we can see aggregated and non-aggregate columns
+SELECT *,
+	AVG(amount) OVER(PARTITION BY date, city) as avg_daily_transaction_amount_for_city
+FROM TransactionCities
+ORDER BY id ASC;
+GO
+
+--Calculating average sales for the preceding and current days for each date (for example a 2-day moving average)
+--
+SELECT * 
+FROM TransactionCities;
+GO
+--
+WITH daily_sales AS (
+	SELECT date, SUM(amount) as sales_per_day
+	FROM TransactionCities
+	GROUP BY date
+)
+SELECT 
+	date,
+	AVG(sales_per_day) OVER (ORDER BY date ROWS 1 PRECEDING) as avg_2days_sales 
+FROM daily_sales 
+ORDER BY date;
