@@ -206,6 +206,8 @@ WHERE TerritoryName IS NOT NULL AND SalesYTD <> 0
 ORDER BY TerritoryName;  
 GO
 
+--https://www.sqlshack.com/overview-of-the-sql-row-number-function/
+
 --
 --NTILE 
 --https://learn.microsoft.com/en-us/sql/t-sql/functions/ntile-transact-sql?view=sql-server-ver16

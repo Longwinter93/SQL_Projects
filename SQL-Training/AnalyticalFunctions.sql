@@ -1,2 +1,0 @@
---https://learnsql.com/blog/sql-window-functions-guide/
---https://learn.microsoft.com/en-us/sql/t-sql/functions/analytic-functions-transact-sql?view=sql-server-ver16
